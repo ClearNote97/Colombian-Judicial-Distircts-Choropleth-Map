@@ -51,7 +51,7 @@ def run(
     if make_viz:
         log.info("Viz: choropleths de ejemplo (eficiencia)")
         distrito = export.simplify(levels["distrito"], tolerance)
-        viz_files = viz.generate_example_maps(distrito)
+        viz_files = viz.generate_example_maps(distrito, geometries)
 
     return {
         "niveles": {name: len(g) for name, g in levels.items()},

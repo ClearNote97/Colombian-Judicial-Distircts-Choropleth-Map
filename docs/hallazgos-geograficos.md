@@ -46,11 +46,30 @@ polígono de su municipio:
 - **Santa Rita** → corregimiento de **Cumaribo** (Vichada, 99773) desde 1996.
 - **Coconuco** → cabecera/corregimiento de **Puracé** (Cauca, 19585).
 
-## 4. Vacíos del mapa (lectura original del autor)
+## 4. Vacíos del mapa: municipios sin juzgado
 
-Los espacios en blanco del mapa representan **brechas de cobertura judicial** y/o
-**desactualización** entre el Mapa Judicial y la división político-administrativa vigente —
-no todos los municipios del país aparecen con juzgado asignado.
+Los espacios en blanco del mapa son el hallazgo original del autor: **no todos los municipios
+tienen juzgado**. Cuantificado con datos (MGN DANE 2024 vs Mapa Judicial), hay **20 municipios
+con territorio que NO aparecen en el Mapa Judicial** (sin juzgado asignado):
+
+| Departamento | # | Nota |
+|---|---|---|
+| Amazonas | 9 | Áreas remotas / corregimientos departamentales sin juzgado municipal |
+| Guainía | 4 | Orinoquía/Amazonía |
+| Vaupés | 3 | Amazonía |
+| Córdoba | 2 | |
+| Bolívar | 1 | **Norosí (13490)** — municipio reciente del sur de Bolívar |
+| Cauca | 1 | |
+
+> **Importante — dos tipos de blanco distintos:**
+> - **Sin juzgado (20):** tienen geometría pero no están en el Mapa Judicial → brecha de cobertura
+>   judicial (el hallazgo). En el mapa se ven como vacíos dentro del contorno del país.
+> - **Sin geometría (1):** *Belén de Bajirá (27493)* sí está en el Mapa Judicial, pero el MGN aún no
+>   trae su polígono (municipio nuevo en disputa territorial Antioquia/Chocó). Es ausencia de dato
+>   cartográfico, no de juzgado.
+
+Por eso el mapa dibuja la **figura completa de Colombia** en gris de fondo: para que estos vacíos se
+lean como *municipios sin cobertura dentro del país*, no como ausencia total de territorio.
 
 ---
 
