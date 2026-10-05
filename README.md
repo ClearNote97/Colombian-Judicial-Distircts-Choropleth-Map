@@ -1,38 +1,82 @@
-# Colombian-Judicial-Distircts-Choropleth-Map
-## About
-This project is a significant milestone for me as it marks my very first venture into Python programming. In recent years, I have developed a profound interest in data science as a means to continue my growth as a researcher in the Law & Economic field. Hence, to kickstart my programming journey, I decided to create a Choropleth map of the Colombian Judicial Districts' territorial distribution. At the beginning of my academic path, there weren't many resources available for conducting better research in my country, which further motivated me to embark on this project.
+# 🗺️ Mapa Judicial de Colombia — Choropleth multinivel
 
-## Language Style and Motivation
-One of my intentional choices was to use a plural language style, creating a sort of educational narrative in the notebook. This approach felt right to me and added a unique touch to the project.
+Pipeline reproducible que construye los **archivos de mapa de los distritos judiciales de
+Colombia** a distintos niveles (municipio → circuito → distrito), listos para importar en
+**Power BI, Dash** u otras herramientas. Nace como herramienta para la investigación en
+**análisis económico del derecho (Law & Economics)**.
 
-## Observations and Implications
-As I delved into the map creation, I couldn’t help but notice some critical observations:
+> **La tesis del proyecto:** la **geografía judicial no coincide** con la división
+> político-administrativa de Colombia. Los distritos y circuitos judiciales **cruzan fronteras
+> departamentales**. Visualizar esa geografía propia es el aporte de este mapa.
+> Ver [`docs/hallazgos-geograficos.md`](docs/hallazgos-geograficos.md).
 
-* The map’s white spaces are symbolic; they represent the existing gaps in the judicial system. It became evident that not all municipalities in Colombia are adequately covered by courts, which is a fundamental constitutional right that needs to be addressed urgently. Whether it's due to a desactualization of the Judicial Map's PDF File or the lack of proper investment in closing this gap.
-* Additionally, I realized that certain Government Municipalities Databases may not have kept up with recent changes in the territorial divisions.
-These findings have important implications for the Law & Economic field and call for further investigation and action.
+> La primera versión (un notebook monolítico, primer proyecto de programación del autor) se
+> conserva intacta en [`docs/legado/`](docs/legado/).
 
-## Open Access and Acknowledgement
-Despite any imperfections in the code or data, I'm genuinely pleased with the final results.
+---
 
-I'm also making this project Open Access because I believe it could be beneficial to others in the field. And by providing proper reference recognition, I hope to keep track of any papers or future map developments that may utilize this work as a foundation.
+## 🚀 Cómo correr
 
-This project is just the beginning of my journey, and I'm excited to see how my skills and knowledge will grow in the future. I sincerely hope that this humble contribution can be a stepping stone for more sophisticated mapping developments and help address important issues in Colombia's legal landscape.
+Requiere **Docker** + **VS Code** con la extensión **Dev Containers** (ver
+[`README_AGENTS.md`](README_AGENTS.md)).
 
-## How to Use
-To use this project, simply clone the repository and run the Jupyter notebook to generate the Choropleth map of the Colombian Judicial Districts. The necessary data files are included in the repository, so you can start exploring and visualizing the data right away.
+1. Abre el proyecto en VS Code → **Reopen in Container** (espera al `postCreateCommand`).
+2. Un solo comando genera todo:
 
-Feel free to use and modify the code for your own projects, and don't forget to give proper credit to the original author (me) by including the appropriate references.
+```bash
+python -m judicial_map
+```
 
-## License
-This project is licensed under the MIT License - see the [LICENSE]() file for details.
+Opciones: `--refresh` (re-descarga las fuentes), `--tolerance 0` (sin simplificar geometría),
+`--no-viz` (omite los choropleths de ejemplo).
 
-## Acknowledgments
-I would like to thank the following resources for their support and guidance:
+---
 
-* [StackOverflow's Community forums](https://stackoverflow.com/)
-* [ChatGPT](https://chat.openai.com/)
-* [Google Bard](https://bard.google.com/?hl=en)
-* [Bing Chat](https://www.bing.com/search?pglt=2083&q=bing+chat&cvid=b8b27a3920d14742a3feed991b60ebe8&aqs=edge.1.69i59j0l8.1688j0j1&FORM=ANNTA1&PC=U531)
+## 📦 Qué produce (en `output/`)
 
-They were instrumental in helping me overcome roadblocks and turn my ideas into reality.
+El **producto principal** son los archivos de mapa, en dos formatos por nivel:
+
+| Nivel | GeoJSON (geometría) | XLSX (atributos) |
+|---|---|---|
+| Municipio judicial | `mapa_judicial_municipio.geojson` | `mapa_judicial_municipio.xlsx` |
+| Circuito judicial | `mapa_judicial_circuito.geojson` | `mapa_judicial_circuito.xlsx` |
+| Distrito judicial | `mapa_judicial_distrito.geojson` | `mapa_judicial_distrito.xlsx` |
+
+Además, dos **choropleths de verificación** (HTML autocontenido) que colorean los distritos por
+la eficiencia promedio de sus juzgados, usando los datos de ejemplo:
+`choropleth_eficiencia_municipal.html` y `choropleth_eficiencia_circuito.html`.
+
+---
+
+## 🔗 Fuentes de datos
+
+| Fuente | Qué aporta |
+|---|---|
+| **PDF Mapa Judicial** (Rama Judicial) | Jerarquía distrito → circuito → municipio (vía `camelot`) |
+| **DIVIPOLA** (DANE) | Código DANE de 5 dígitos por municipio |
+| **MGN 2024** (DANE, FeatureServer) | Geometría municipal por código DANE |
+| `data/other/DB1/DB2 *.xlsx` | **Datos de ejemplo**: eficiencia de juzgados (para verificar) |
+
+El PDF y DIVIPOLA se cachean y versionan (sus URLs pueden caer); la geometría MGN (~250 MB) se
+cachea pero **no** se versiona (se regenera). La homologación de nombres municipio → código DANE
+vive en [`data/homologacion/`](data/homologacion/) (ver `docs/bitacora-decisiones.md`, D-004).
+
+---
+
+## 🧱 Estructura
+
+```
+src/judicial_map/   ingest → homologate → merge → export (+ viz) · pipeline · __main__
+data/other/         datos de ejemplo + caché de fuentes
+data/homologacion/  tablas de homologación (override YAML)
+output/             el producto (geojson/xlsx multinivel + choropleths)
+tests/              pytest (el gate)
+docs/               bitácora de decisiones, diccionario de datos, hallazgos, legado/
+```
+
+---
+
+## ⚖️ Licencia · ✍️ Autor
+
+[MIT](LICENSE). **MSc. Nicolás Enrique Valencia Santiago.** Proyecto de acceso abierto; se agradece
+la referencia a esta obra en trabajos derivados.
