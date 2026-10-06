@@ -12,6 +12,7 @@ dependencies = [
     "ipykernel>=7.4.0",
     "ipynbname>=2025.8.0.0",
     "ipython>=9.17.1",
+    "matplotlib>=3.11.2",
     "numpy>=2.5.3",
     "opencv-python-headless>=5.0.0.93",
     "openpyxl>=3.1.5",
