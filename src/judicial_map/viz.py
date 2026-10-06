@@ -22,8 +22,9 @@ import plotly.graph_objects as go
 
 from . import config, homologate
 
-_BASE_FILL = "#ededed"
+_BASE_FILL = "#ededed"       # sin juzgado: municipio que NO está en el Mapa Judicial
 _BASE_LINE = "#c9c9c9"
+_NODATA_FILL = "#a6bddb"     # distrito EN el Mapa Judicial pero sin dato de eficiencia
 _INSET_DOMAIN = {"x": [0.0, 0.24], "y": [0.55, 0.95]}
 _SA_DISTRICT = "ARCH SAN ANDRES"
 _DISTRICT_ALIAS = {_SA_DISTRICT: "SAN ANDRES"}
@@ -60,6 +61,18 @@ def _base_trace(gdf: gpd.GeoDataFrame, id_col: str, geo: str) -> go.Choropleth:
     )
 
 
+def _nodata_trace(gdf: gpd.GeoDataFrame, geo: str) -> go.Choropleth:
+    """Distritos que están en el Mapa Judicial pero no tienen dato de eficiencia."""
+    g = gdf.reset_index(drop=True).copy()
+    g["fid"] = g.index.astype(str)
+    return go.Choropleth(
+        geojson=json.loads(g.to_json()), locations=g["fid"], featureidkey="properties.fid",
+        z=[0] * len(g), colorscale=[[0, _NODATA_FILL], [1, _NODATA_FILL]], showscale=False,
+        marker_line_color="white", marker_line_width=0.4,
+        text=g["district"], hoverinfo="text", geo=geo,
+    )
+
+
 # --------------------------------------------------------------------------- #
 # Trazas de datos
 # --------------------------------------------------------------------------- #
@@ -88,25 +101,35 @@ def _div_trace(gdf: gpd.GeoDataFrame, cats: list[str], colorscale: list, geo: st
 # --------------------------------------------------------------------------- #
 # Composición (continente + inset)
 # --------------------------------------------------------------------------- #
-def _compose(title: str, traces_main: list, traces_inset: list, out_html: Path | None) -> go.Figure:
+def _compose(title: str, traces_main: list, traces_inset: list, out_html: Path | None,
+             legend_items: list[tuple[str, str]] | None = None) -> go.Figure:
     fig = go.Figure()
-    for t in traces_main:
+    for t in traces_main + traces_inset:
         fig.add_trace(t)
-    for t in traces_inset:
-        fig.add_trace(t)
+
+    shapes = [{"type": "rect", "xref": "paper", "yref": "paper",
+               "x0": _INSET_DOMAIN["x"][0], "x1": _INSET_DOMAIN["x"][1],
+               "y0": _INSET_DOMAIN["y"][0], "y1": _INSET_DOMAIN["y"][1],
+               "line": {"color": "#999", "width": 1}}]
+    annotations = [{"text": "San Andrés, Providencia<br>y Santa Catalina",
+                    "x": sum(_INSET_DOMAIN["x"]) / 2, "y": _INSET_DOMAIN["y"][1] + 0.02,
+                    "xref": "paper", "yref": "paper", "showarrow": False,
+                    "font": {"size": 9}, "align": "center"}]
+    for i, (color, label) in enumerate(legend_items or []):
+        y = 0.03 + i * 0.05
+        shapes.append({"type": "rect", "xref": "paper", "yref": "paper",
+                       "x0": 0.02, "x1": 0.035, "y0": y, "y1": y + 0.03,
+                       "fillcolor": color, "line": {"color": "#999", "width": 0.5}})
+        annotations.append({"text": label, "x": 0.042, "y": y + 0.015,
+                            "xref": "paper", "yref": "paper", "showarrow": False,
+                            "xanchor": "left", "font": {"size": 10}})
+
     fig.update_layout(
         title_text=title, title_x=0.5, margin={"r": 0, "t": 40, "l": 0, "b": 0},
         geo={"visible": False, "fitbounds": "locations", "domain": {"x": [0, 1], "y": [0, 1]}},
         geo2={"visible": False, "fitbounds": "locations", "domain": _INSET_DOMAIN,
               "bgcolor": "rgba(0,0,0,0)"},
-        shapes=[{"type": "rect", "xref": "paper", "yref": "paper",
-                 "x0": _INSET_DOMAIN["x"][0], "x1": _INSET_DOMAIN["x"][1],
-                 "y0": _INSET_DOMAIN["y"][0], "y1": _INSET_DOMAIN["y"][1],
-                 "line": {"color": "#999", "width": 1}}],
-        annotations=[{"text": "San Andrés, Providencia<br>y Santa Catalina",
-                      "x": sum(_INSET_DOMAIN["x"]) / 2, "y": _INSET_DOMAIN["y"][1] + 0.02,
-                      "xref": "paper", "yref": "paper", "showarrow": False,
-                      "font": {"size": 9}, "align": "center"}],
+        shapes=shapes, annotations=annotations,
     )
     if out_html:
         fig.write_html(out_html, include_plotlyjs=True)
@@ -143,12 +166,19 @@ def generate_example_maps(
         if not db_path.exists():
             continue
         g = _prep_efficiency(distrito_gdf, ingest.load_efficiency(db_path), "AVG_Eff")
-        main = [_base_trace(mainland, "bid", "geo"),
-                _eff_trace(g[~is_sa.values], "AVG_Eff", "geo", showscale=True)]
+        gm = g[~is_sa.values]
+        gm_data = gm[gm["AVG_Eff"].notna()]
+        gm_nodata = gm[gm["AVG_Eff"].isna()]
+        main = [_base_trace(mainland, "bid", "geo")]
+        if len(gm_nodata):
+            main.append(_nodata_trace(gm_nodata, "geo"))
+        main.append(_eff_trace(gm_data, "AVG_Eff", "geo", showscale=True))
         inset = [_base_trace(arch, "cod_dane", "geo2"),
                  _eff_trace(g[is_sa.values], "AVG_Eff", "geo2", showscale=False)]
+        legend = [(_BASE_FILL, "Municipio sin juzgado"),
+                  (_NODATA_FILL, "Distrito sin dato de eficiencia")]
         out = outdir / fname
-        _compose(title, main, inset, out)
+        _compose(title, main, inset, out, legend_items=legend)
         written.append(out)
 
     cats = sorted(distrito_gdf["district"].unique())
