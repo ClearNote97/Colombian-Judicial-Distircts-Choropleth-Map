@@ -42,9 +42,11 @@ El **producto principal** son los archivos de mapa, en dos formatos por nivel:
 | Circuito judicial | `mapa_judicial_circuito.geojson` | `mapa_judicial_circuito.xlsx` |
 | Distrito judicial | `mapa_judicial_distrito.geojson` | `mapa_judicial_distrito.xlsx` |
 
-Además, dos **choropleths de verificación** (HTML autocontenido) que colorean los distritos por
-la eficiencia promedio de sus juzgados, usando los datos de ejemplo:
-`choropleth_eficiencia_municipal.html` y `choropleth_eficiencia_circuito.html`.
+Además, **mapas de verificación** (PNG + PDF, hechos con matplotlib) sobre la figura completa del
+país: la división por distritos (`mapa_distritos_judiciales`) y dos choropleths de eficiencia de
+los juzgados (`choropleth_eficiencia_municipal`, `choropleth_eficiencia_circuito`), con inset del
+Archipiélago de San Andrés. *(Se usa matplotlib y no Plotly porque plotly.js no renderiza las
+geometrías de las áreas no municipalizadas de la Amazonía; ver `docs/bitacora-decisiones.md` D-007.)*
 
 ---
 

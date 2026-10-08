@@ -21,8 +21,8 @@ camelot-py
 opencv-python-headless
 pypdf
 
-# Visualization (choropleth)
-plotly
+# Visualization (mapas estáticos PNG/PDF)
+matplotlib
 
 # Jupyter and interactive computing (exploration only)
 ipython

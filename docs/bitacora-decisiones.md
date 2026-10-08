@@ -17,6 +17,7 @@
 | [D-004](#d-004--homologación-municipio--código-dane-por-nombre-no-por-número-del-pdf) | Homologación municipio → código DANE por nombre normalizado + override YAML | 2026-10-04 | Aceptada |
 | [D-005](#d-005--fuente-de-geometría-dane-mgn) | Fuente de geometría: shapefile oficial DANE/MGN | 2026-10-04 | Aceptada |
 | [D-006](#d-006--producto-judicial-céntrico-el-departamento-no-es-nivel-de-salida) | Producto judicial-céntrico; el departamento no es nivel de salida | 2026-10-04 | Aceptada · refina D-003/D-004 |
+| [D-007](#d-007--viz-en-matplotlib-pngpdf-no-plotly) | Viz en matplotlib (PNG/PDF), no plotly | 2026-10-06 | Aceptada · reemplaza viz plotly |
 
 ---
 
@@ -80,6 +81,16 @@
 - **Por qué:** Petición explícita del autor; el cruce con lo político-administrativo solo sirve para dar geometría y agregar, no para describir el territorio judicial.
 - **Hallazgos que valida (ver `docs/hallazgos-geograficos.md`):** 12 municipios cuyo distrito judicial está en otro departamento (el PDF los marca con `(BOY)`, `(CESAR)`, etc.); Villavicencio abarca 6 departamentos; varios departamentos tienen 2 distritos judiciales.
 - **Consecuencias:** `config.LEVELS = ("municipio", "circuito", "distrito")`. El `dissolve` final es por columna judicial, no por departamento.
+
+## D-007 — Viz en matplotlib (PNG/PDF), no plotly
+
+- **Fecha:** 2026-10-06
+- **Estado:** Aceptada (reemplaza la viz en plotly)
+- **Contexto:** Los mapas de ejemplo se hicieron primero en Plotly (HTML interactivo). Al agregar la figura completa del país como base, el mapa salía **en blanco** en el navegador.
+- **Decisión:** Hacer los mapas en **matplotlib** (salida **PNG + PDF** estática), no Plotly. Se quitaron `plotly` y `kaleido` de las dependencias; se agregó `matplotlib`.
+- **Por qué:** Se aisló la causa con render real: **plotly.js no renderiza las geometrías de las áreas no municipalizadas de la Amazonía** (16 de los 20 municipios sin juzgado) — deja toda la figura en blanco, aun disueltas/simplificadas a un solo polígono. matplotlib las dibuja sin problema, y PNG/PDF de alta calidad sirven mejor para publicaciones.
+- **Alternativas descartadas:** Contorno nacional limpio de fuente externa (geoBoundaries ADM0, 707 coords) — también falló en plotly.js: el problema es el motor, no la geometría de origen.
+- **Consecuencias:** Mapas estáticos (sin hover/zoom). El inset de San Andrés usa transformación afín (escala + acerca Providencia, **no a escala real**) para legibilidad. El producto (geojson/xlsx) queda intacto.
 
 ---
 
