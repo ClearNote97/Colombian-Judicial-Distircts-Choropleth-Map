@@ -79,12 +79,28 @@ _Negro = distrito sin dato · Gris = municipio sin juzgado · inset: San Andrés
 
 ## ▶️ Cómo correr
 
-> Todo corre **dentro del Dev Container** (ahí viven Python, `uv` y las librerías geoespaciales).
+Todo corre **dentro de un Dev Container**: no instalás Python ni nada en tu máquina, vive en el contenedor.
+
+**Requisitos:** [Docker](https://www.docker.com/) (en Windows, vía WSL2), [VS Code](https://code.visualstudio.com/)
+con la extensión [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers), y Git.
+
+**Paso a paso:**
 
 ```bash
-# 1. Abrir el repo en VS Code → "Reopen in Container" (el postCreate corre `uv sync`)
+# 1. Clonar el repo y entrar a la carpeta
+git clone https://github.com/ClearNote97/Colombian-Judicial-Distircts-Choropleth-Map.git
+cd Colombian-Judicial-Distircts-Choropleth-Map
 
-# 2. Generar el mapa — un solo comando:
+# 2. Abrir en VS Code
+code .
+```
+
+3. **Abrir en el contenedor:** `Ctrl+Shift+P` → **"Dev Containers: Reopen in Container"**. Esperá a que
+   termine (la primera vez construye la imagen y corre `uv sync`; tarda un poco).
+
+4. **Generar el mapa** — un solo comando, en la terminal del contenedor:
+
+```bash
 uv run python -m judicial_map
 #    → deja los archivos en output/
 ```
