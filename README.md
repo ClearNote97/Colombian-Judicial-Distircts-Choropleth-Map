@@ -134,6 +134,42 @@ juzgados usando los datos de ejemplo (`data/other/DB1/DB2 *.xlsx`).
 
 ---
 
+## 📄 Ejemplo de la salida
+
+**Atributos a nivel municipio** (`mapa_judicial_municipio.xlsx` — y propiedades del geojson/topojson):
+
+| district | circuit | municipality | cod_dane | municipio_dane |
+|---|---|---|---|---|
+| ANTIOQUIA | ABEJORRAL | ABEJORRAL | `05002` | ABEJORRAL |
+| ANTIOQUIA | AMAGA | AMAGA | `05030` | AMAGÁ |
+| ANTIOQUIA | AMALFI | AMALFI | `05031` | AMALFI |
+| ANTIOQUIA | AMALFI | ANORI | `05040` | ANORÍ |
+| ANTIOQUIA | ANDES | ANDES | `05034` | ANDES |
+
+**A nivel distrito** (`mapa_judicial_distrito.xlsx`) — una fila por distrito con su conteo de municipios:
+
+| district | n_municipios |
+|---|---|
+| ANTIOQUIA | 112 |
+| ARAUCA | 8 |
+| ARCH SAN ANDRES | 2 |
+| ARMENIA | 12 |
+| … | … |
+
+**GeoJSON** — cada región es una *feature* con sus atributos + geometría (EPSG:4326):
+
+```json
+{
+  "type": "Feature",
+  "properties": { "district": "ANTIOQUIA", "n_municipios": 112 },
+  "geometry": { "type": "Polygon", "coordinates": [[[-75.90, 6.41], [-75.88, 6.40], "..."]] }
+}
+```
+
+> El `cod_dane` es la **clave de enlace** para Power BI (texto de 5 dígitos, con el cero inicial: `05002`).
+
+---
+
 ## 🔬 Hallazgos
 
 Emergidos del cruce Mapa Judicial × DANE (ver [`docs/hallazgos-geograficos.md`](docs/hallazgos-geograficos.md)):
