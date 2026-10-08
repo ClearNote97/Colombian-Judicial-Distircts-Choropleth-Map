@@ -12,17 +12,24 @@ def main() -> None:
         prog="judicial_map",
         description="Genera los archivos de mapa judicial de Colombia (municipio/circuito/distrito).",
     )
+    parser.add_argument("--niveles", nargs="+", choices=list(config.LEVELS),
+                        default=list(config.LEVELS), metavar="NIVEL",
+                        help="Niveles de mapa a generar: municipio, circuito, distrito "
+                             "(por defecto: los tres).")
     parser.add_argument("--refresh", action="store_true",
-                        help="Re-descargar las fuentes de red (ignora la caché).")
+                        help="Re-descargar las fuentes de red (PDF, DIVIPOLA, geometría); "
+                             "ignora la caché. Úsalo solo si las fuentes se actualizaron.")
     parser.add_argument("--tolerance", type=float, default=config.SIMPLIFY_TOLERANCE,
-                        help="Tolerancia de simplificación de geometría en grados (0 = sin simplificar).")
+                        help="Simplificación de geometría en grados (0 = máximo detalle; "
+                             f"por defecto {config.SIMPLIFY_TOLERANCE}, archivos más livianos).")
     parser.add_argument("--no-viz", action="store_true",
-                        help="No generar los choropleths de ejemplo (solo los archivos de mapa).")
+                        help="No generar los mapas de ejemplo PNG/PDF (solo los archivos de mapa).")
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     summary = pipeline.run(
-        refresh=args.refresh, tolerance=args.tolerance or None, make_viz=not args.no_viz
+        refresh=args.refresh, tolerance=args.tolerance or None,
+        make_viz=not args.no_viz, niveles=tuple(args.niveles),
     )
 
     print("\n== Resumen ==")

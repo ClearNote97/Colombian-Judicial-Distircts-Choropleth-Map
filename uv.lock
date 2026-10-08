@@ -158,7 +158,7 @@ wheels = [
 [[package]]
 name = "colombian-judicial-distircts-choropleth-map"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "camelot-py" },
     { name = "fastexcel" },

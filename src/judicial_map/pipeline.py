@@ -13,6 +13,7 @@ def run(
     refresh: bool = False,
     tolerance: float | None = config.SIMPLIFY_TOLERANCE,
     make_viz: bool = True,
+    niveles: tuple[str, ...] | None = None,
 ) -> dict:
     """Ejecuta el pipeline completo y genera los archivos de mapa en ``output/``.
 
@@ -42,15 +43,16 @@ def run(
     if len(missing):
         log.warning("%d municipios sin geometría: %s", len(missing),
                     ", ".join(missing["municipality"].tolist()))
-    levels = merge.aggregate_levels(municipios)
+    all_levels = merge.aggregate_levels(municipios)
+    levels = ({k: v for k, v in all_levels.items() if k in niveles} if niveles else all_levels)
 
-    log.info("4/4 Export: archivos de mapa a %s", config.OUTPUT)
+    log.info("4/4 Export (%s): archivos de mapa a %s", ", ".join(levels), config.OUTPUT)
     written = export.write_all(levels, tolerance=tolerance)
 
     viz_files: list = []
     if make_viz:
         log.info("Viz: choropleths de ejemplo (eficiencia)")
-        distrito = export.simplify(levels["distrito"], tolerance)
+        distrito = export.simplify(all_levels["distrito"], tolerance)
         viz_files = viz.generate_example_maps(distrito, geometries)
 
     return {

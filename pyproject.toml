@@ -1,7 +1,7 @@
 [project]
 name = "colombian-judicial-distircts-choropleth-map"
 version = "0.1.0"
-description = "Add your description here"
+description = "Pipeline del Mapa Judicial de Colombia: archivos de mapa multinivel (municipio/circuito/distrito)."
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
@@ -30,3 +30,12 @@ dependencies = [
     "xlrd>=2.0.2",
     "xlsxwriter>=3.2.9",
 ]
+
+# Paquete en src/ -> `judicial_map` importable tras `uv sync` (uv instala el proyecto
+# en modo editable). Así `python -m judicial_map` funciona sin depender de PYTHONPATH.
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
