@@ -9,10 +9,11 @@
 
 ---
 
-## Producto — `output/mapa_judicial_{municipio,circuito,distrito}.{geojson,xlsx}`
+## Producto — `output/mapa_judicial_{municipio,circuito,distrito}.{geojson,topojson,xlsx}`
 
 Archivos de mapa, una fila por unidad judicial. El `.geojson` trae `geometry` (polígono, EPSG:4326);
-el `.xlsx` trae los mismos atributos sin geometría.
+el `.topojson` trae la misma geometría con topología compartida (para el Shape Map de Power BI,
+clave `cod_dane`/`district`); el `.xlsx` trae los mismos atributos sin geometría.
 
 | Variable | Tipo | Descripción | Niveles | Fuente |
 |---|---|---|---|---|

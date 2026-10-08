@@ -15,6 +15,7 @@ shapely
 pyproj
 fiona
 pyogrio
+topojson
 
 # PDF table extraction (judicial map)
 camelot-py

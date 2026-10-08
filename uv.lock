@@ -181,6 +181,7 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "pyyaml" },
     { name = "shapely" },
+    { name = "topojson" },
     { name = "xlrd" },
     { name = "xlsxwriter" },
 ]
@@ -208,6 +209,7 @@ requires-dist = [
     { name = "python-dotenv", specifier = ">=1.2.4" },
     { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "shapely", specifier = ">=2.1.2" },
+    { name = "topojson", specifier = ">=2.1" },
     { name = "xlrd", specifier = ">=2.0.2" },
     { name = "xlsxwriter", specifier = ">=3.2.9" },
 ]
@@ -1319,6 +1321,19 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/46/58/8c37dea7bbf769b20d58e7ace7e5edfe65b849442b00ffcdd56be88697c6/tabulate-0.10.0.tar.gz", hash = "sha256:e2cfde8f79420f6deeffdeda9aaec3b6bc5abce947655d17ac662b126e48a60d", size = 91754, upload-time = "2026-03-04T18:55:34.402Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/99/55/db07de81b5c630da5cbf5c7df646580ca26dfaefa593667fc6f2fe016d2e/tabulate-0.10.0-py3-none-any.whl", hash = "sha256:f0b0622e567335c8fabaaa659f1b33bcb6ddfe2e496071b743aa113f8774f2d3", size = 39814, upload-time = "2026-03-04T18:55:31.284Z" },
+]
+
+[[package]]
+name = "topojson"
+version = "2.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "shapely" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/0d/58/e3524df5df9af2af700a8ad9a0c124a61a7ec6592bc36b9dabcb730294f0/topojson-2.1.tar.gz", hash = "sha256:ee4d197d96775321de4c5e7f29cbf0d06829de672b9f3387b3e775dd1982057a", size = 99860, upload-time = "2026-10-04T21:40:37.659Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/92/cc/c3a28bc0e6a11bc294bd00852ed0ad37be11702c0fe3195acb3a9c6eaaab/topojson-2.1-py3-none-any.whl", hash = "sha256:40b9f9e4b7c3934cef7d1463f9b63cb53dd5ba6308779d348130faf9dc502fd4", size = 104736, upload-time = "2026-10-04T21:40:36.179Z" },
 ]
 
 [[package]]

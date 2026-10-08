@@ -34,13 +34,18 @@ Opciones: `--refresh` (re-descarga las fuentes), `--tolerance 0` (sin simplifica
 
 ## 📦 Qué produce (en `output/`)
 
-El **producto principal** son los archivos de mapa, en dos formatos por nivel:
+El **producto principal** son los archivos de mapa, por nivel y en tres formatos:
 
-| Nivel | GeoJSON (geometría) | XLSX (atributos) |
-|---|---|---|
-| Municipio judicial | `mapa_judicial_municipio.geojson` | `mapa_judicial_municipio.xlsx` |
-| Circuito judicial | `mapa_judicial_circuito.geojson` | `mapa_judicial_circuito.xlsx` |
-| Distrito judicial | `mapa_judicial_distrito.geojson` | `mapa_judicial_distrito.xlsx` |
+- **`.geojson`** — geometría, para Dash / web / SIG.
+- **`.topojson`** — para el **Shape Map de Power BI** (compacto, bordes compartidos). Clave de
+  enlace: `cod_dane` (municipio) o `district` (distrito/circuito).
+- **`.xlsx`** — atributos sin geometría, para tablas y joins.
+
+| Nivel | Archivos |
+|---|---|
+| Municipio judicial | `mapa_judicial_municipio.{geojson,topojson,xlsx}` |
+| Circuito judicial | `mapa_judicial_circuito.{geojson,topojson,xlsx}` |
+| Distrito judicial | `mapa_judicial_distrito.{geojson,topojson,xlsx}` |
 
 Además, **mapas de verificación** (PNG + PDF, hechos con matplotlib) sobre la figura completa del
 país: la división por distritos (`mapa_distritos_judiciales`) y dos choropleths de eficiencia de
