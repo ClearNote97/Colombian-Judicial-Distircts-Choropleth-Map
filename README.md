@@ -2,11 +2,11 @@
 
 # 🗺️ Mapa Judicial de Colombia
 
-**El mapa de la justicia colombiana, reconstruido como un _pipeline de datos reproducible_.**
+**La geografía judicial de Colombia, reconstruida desde el PDF oficial y lista para usar.**
 
-_Lo valioso de este repo **no es solo el mapa: es el método** — cómo se reconstruyó, desde un PDF
-oficial, la geografía judicial de Colombia (que **no coincide** con la división político-administrativa),
-de forma rigurosa, trazable y ejecutable con un comando, en colaboración con un agente de IA._
+_Mi primer proyecto después de aprender a programar, hoy reconstruido como un pipeline que, con un
+comando, convierte el Mapa Judicial en archivos de mapa (GeoJSON, TopoJSON, Excel). Lo que quiero
+mostrar acá es el **método**: cómo abordo un problema de datos real de punta a punta._
 
 ![Python](https://img.shields.io/badge/Python-3.14-3776AB?logo=python&logoColor=white)
 ![uv](https://img.shields.io/badge/deps-uv-DE5FE9)
@@ -24,52 +24,42 @@ de forma rigurosa, trazable y ejecutable con un comando, en colaboración con un
 
 ---
 
-Este fue mi **primer proyecto después de aprender a programar**, hoy reconstruido como un pipeline
-profesional. Toma el **PDF oficial del Mapa Judicial** de la Rama Judicial y lo convierte en
-**archivos de mapa listos para usar** (GeoJSON, TopoJSON, Excel) de los distritos judiciales de
-Colombia, a tres niveles: **municipio → circuito → distrito**. Habilita el análisis geoespacial de mi
-línea de investigación, el **análisis económico del derecho (Law & Economics)**.
+Soy investigador en **análisis económico del derecho (Law & Economics)**. Para estudiar la justicia
+colombiana en el espacio necesitaba algo que no existía como archivo geográfico: el mapa de los
+**distritos judiciales**. Vive en un PDF. Así que lo reconstruí — a tres niveles
+(**municipio → circuito → distrito**) y listo para Power BI, Dash o cualquier SIG.
 
 ---
 
 ## 🧩 El problema
 
-> **La geografía judicial de Colombia NO coincide con su división político-administrativa.**
+> **La geografía judicial de Colombia no coincide con la división político-administrativa.**
 
-Los distritos y circuitos judiciales **cruzan fronteras departamentales**, agrupan municipios de
-maneras propias, y no existen como archivo geográfico listo: viven en un **PDF**. Para analizarlos
-(coropléticos, tableros, estadística espacial) hay que **reconstruir esa geografía** y cruzarla con
-los municipios oficiales — sin perder el rigor de qué municipio pertenece a qué unidad judicial.
+Los distritos y circuitos judiciales cruzan fronteras departamentales y agrupan municipios a su manera.
+No hay un archivo geográfico de esto: está en un PDF. Para analizarlo hay que **reconstruir esa
+geografía** y cruzarla con los municipios oficiales del DANE, sin equivocarse en qué municipio es cuál.
 
 ---
 
-## 🧠 Cómo se abordó (lo valioso)
+## 🧠 Cómo lo resolví
 
-El corazón del proyecto es el *método*, no solo el mapa:
+El valor está en el método:
 
-1. **El producto, primero.** Se definió que el entregable son **archivos de mapa multinivel**
-   importables (no un notebook): municipio, circuito y distrito judicial.
-2. **Extracción del PDF.** `camelot` lee la jerarquía Distrito → Circuito → Municipio del PDF oficial
-   (una tabla de ~1.100 municipios).
-3. **Homologación por código, no por 400 regex.** El reto: el nombre del municipio en el PDF no
-   coincide con el oficial del DANE (tildes, abreviaturas, typos). En vez de corregir a mano (como la
-   primera versión), se **construye el código DANE** cruzando `nombre normalizado + reglas + el
-   "footprint" del distrito`, con una **tabla de override** curada solo para el residuo. Resultado:
-   **cobertura 1.104/1.104**, verificable.
-4. **Verificación dura, no confianza en el nombre.** Se detectaron y corrigieron casos de *"nombre
-   único equivocado"* (p. ej. `SANTUARIO` → El Santuario de Antioquia, no el de Risaralda) por choque
-   de códigos, y se separó *"distrito sin dato"* de *"municipio sin juzgado"*.
-5. **Geometría oficial.** Se une el código DANE con la geometría municipal del **DANE/MGN** y se hace
-   `dissolve` por unidad **judicial** (no por departamento).
-6. **Honestidad técnica.** Cuando Plotly no pudo renderizar las geometrías de las áreas no
-   municipalizadas de la Amazonía, se diagnosticó con render real y se migró a **matplotlib** — todo
-   registrado en la bitácora.
-7. **Bitácora de decisiones** (`docs/bitacora-decisiones.md`, `D-001`…`D-007`) como **evidencia del
-   razonamiento**: qué se decidió, por qué, qué se descartó y qué cambió.
+1. **Definí el producto primero.** El entregable son archivos de mapa multinivel importables, no un notebook.
+2. **Extraje la jerarquía del PDF** con `camelot`: Distrito → Circuito → Municipio (~1.100 municipios).
+3. **Homologué por código, no con 400 regex.** Los nombres del PDF no coinciden con los del DANE (tildes,
+   abreviaturas, typos). En vez de corregirlos a mano, **construyo el código DANE** cruzando nombre
+   normalizado + reglas + la zona del distrito, y dejo una tabla chica de *override* para el resto.
+   **Cobertura: 1.104 de 1.104.**
+4. **Verifiqué en serio.** Cacé casos donde un nombre matcheaba al municipio equivocado (`SANTUARIO` →
+   El Santuario de Antioquia, no el de Risaralda) y separé *"distrito sin dato"* de *"municipio sin juzgado"*.
+5. **Pegué la geometría oficial** del DANE/MGN por código y agregué (`dissolve`) por unidad **judicial**.
+6. **Elegí la herramienta correcta.** Cuando Plotly no renderizaba las áreas de la Amazonía, lo diagnostiqué
+   y pasé a matplotlib.
+7. **Dejé trazado el porqué** en la bitácora de decisiones ([`docs/bitacora-decisiones.md`](docs/bitacora-decisiones.md), `D-001`…`D-007`).
 
-> **Iteración humano–IA.** El rol humano fue **dirigir**: definir el producto, aportar el insight de los
-> códigos, fijar criterios (p. ej. "distrito sin dato = negro") y decidir. El agente **ejecutó**:
-> extracción, homologación, verificación, geometría y maquetado, dejando el razonamiento trazado.
+> Trabajé esto con un agente de IA (**Claude Code**): yo dirijo — defino el problema, aporto los insights
+> (como el de los códigos) y decido; el agente ejecuta y deja todo trazado.
 
 ---
 
@@ -114,9 +104,9 @@ uv run python -m judicial_map --refresh                     # re-descargar las f
 | `--niveles` | Qué nivel(es) generar (por defecto los tres). |
 | `--tolerance` | Suavizado de bordes para aligerar archivos (default `0.001`; `0` = máximo detalle). |
 | `--no-viz` | No generar los mapas de ejemplo PNG/PDF. |
-| `--refresh` | Ignorar la caché y re-descargar PDF / DIVIPOLA / geometría. |
+| `--refresh` | Ignorar la caché y re-descargar las fuentes. |
 
-Tests (el gate): `uv run pytest tests/`.
+Tests: `uv run pytest tests/`.
 
 ---
 
@@ -130,7 +120,7 @@ Por cada nivel judicial, en tres formatos:
 - **`.xlsx`** — atributos sin geometría, para tablas y joins.
 
 Más **mapas de ejemplo** (PNG + PDF, matplotlib) que colorean los distritos por la eficiencia de sus
-juzgados usando los datos de ejemplo (`data/other/DB1/DB2 *.xlsx`).
+juzgados, usando los datos de ejemplo (`data/other/DB1/DB2 *.xlsx`).
 
 ---
 
@@ -166,19 +156,32 @@ juzgados usando los datos de ejemplo (`data/other/DB1/DB2 *.xlsx`).
 }
 ```
 
-> El `cod_dane` es la **clave de enlace** para Power BI (texto de 5 dígitos, con el cero inicial: `05002`).
+> `cod_dane` es la **clave de enlace** para Power BI (texto de 5 dígitos, con el cero inicial: `05002`).
+
+---
+
+## 🔗 Fuentes de datos
+
+Acceso directo a las fuentes oficiales que usa el pipeline:
+
+| Fuente | Qué aporta | Acceso directo |
+|---|---|---|
+| **Mapa Judicial** (Rama Judicial) | Jerarquía distrito → circuito → municipio | [📄 PDF](https://www.ramajudicial.gov.co/documents/10228/64622/MAPA+JUDICIAL%282%29.pdf/cab3506e-a815-4fac-bb08-288b7ad54d69) |
+| **DIVIPOLA** (DANE) | Código DANE de 5 dígitos por municipio | [📊 XLSX](https://geoportal.dane.gov.co/descargas/divipola/DIVIPOLA_Municipios.xlsx) |
+| **MGN 2024** (DANE) | Geometría municipal con código DANE | [🌐 FeatureServer](https://geoportal.dane.gov.co/mparcgis/rest/services/MMRA2024/Serv_CapasMMRA_2024/FeatureServer/317) · [geoportal](https://geoportal.dane.gov.co/) |
+
+En la primera corrida el pipeline descarga estas tres y las deja en caché (`data/other/cache/`); después
+trabaja offline. Los `.xlsx` de eficiencia (`DB1`/`DB2`) son **datos de ejemplo** para verificar, no el producto.
 
 ---
 
 ## 🔬 Hallazgos
 
-Emergidos del cruce Mapa Judicial × DANE (ver [`docs/hallazgos-geograficos.md`](docs/hallazgos-geograficos.md)):
+Del cruce Mapa Judicial × DANE (detalle en [`docs/hallazgos-geograficos.md`](docs/hallazgos-geograficos.md)):
 
-- **12 municipios** cuyo distrito judicial está en **otro departamento** — y el propio PDF los marca
-  con sufijos `(BOY)`, `(CESAR)`, `(CUND)`…
-- El distrito de **Villavicencio abarca 6 departamentos** (Meta, Vichada, Guainía, Guaviare, Vaupés + parte de Cundinamarca).
-- **20 municipios sin juzgado asignado** (16 son áreas no municipalizadas de la Amazonía) — los vacíos
-  del mapa, el hallazgo original del autor.
+- **12 municipios** cuyo distrito judicial está en **otro departamento** — y el propio PDF los marca con sufijos `(BOY)`, `(CESAR)`, `(CUND)`…
+- El distrito de **Villavicencio abarca 6 departamentos** (Meta, Vichada, Guainía, Guaviare, Vaupés y parte de Cundinamarca).
+- **20 municipios sin juzgado asignado** (16 son áreas no municipalizadas de la Amazonía): los vacíos del mapa.
 
 ---
 
@@ -191,9 +194,9 @@ Emergidos del cruce Mapa Judicial × DANE (ver [`docs/hallazgos-geograficos.md`]
 │   ├── other/           # datos de ejemplo + caché de fuentes
 │   └── homologacion/    # tabla de override municipio → código DANE (YAML)
 ├── output/              # el producto (geojson/topojson/xlsx) + mapas de ejemplo (png/pdf)
-├── tests/               # pytest (el gate)
+├── tests/               # pytest
 ├── docs/
-│   ├── bitacora-decisiones.md    # el PORQUÉ de cada decisión (D-001…D-007) — la evidencia del método
+│   ├── bitacora-decisiones.md    # el PORQUÉ de cada decisión (D-001…D-007)
 │   ├── hallazgos-geograficos.md  # los hallazgos de investigación
 │   ├── diccionario-de-datos.md   # qué significa cada variable
 │   └── legado/                   # el notebook original, intacto
@@ -204,41 +207,20 @@ Emergidos del cruce Mapa Judicial × DANE (ver [`docs/hallazgos-geograficos.md`]
 
 ---
 
-## 🛠️ Stack y herramientas
+## 🛠️ Stack
 
-**Entorno y lenguaje**
 - **Python 3.14** con **`uv`** (lockfile reproducible) · **Dev Container + Docker** (VS Code).
-- **Plantilla base:** [**ClearNote Py DA**](https://github.com/ClearNote97/ClearNote_Py_DA) — mi plantilla
-  de dev container para análisis de datos en Python.
-
-**Datos y geoespacial**
-- **camelot** (extracción de tablas del PDF) · **geopandas / shapely / pyproj / pyogrio** ·
-  **topojson** · **pandas / numpy** · **openpyxl** · **matplotlib** (mapas estáticos).
-
-**Fuentes**
-- **Mapa Judicial** (Rama Judicial) · **DIVIPOLA** (DANE) · **MGN 2024** (DANE, geometría municipal).
-
-**Agente de IA (par de trabajo)**
-- Reconstruido en colaboración con **Claude** (Anthropic) vía **Claude Code**, en el marco personal
-  de agentes **Helix**. El humano dirige (problema, criterios, insights, decisiones); el agente ejecuta
-  y deja el razonamiento trazado.
-
----
-
-## ⚠️ Nota honesta
-
-Los `.xlsx` de eficiencia (`DB1`/`DB2`) son **datos de ejemplo** para verificar el pipeline, no el
-producto. Las fuentes de red (PDF, DANE) pueden cambiar de URL o contenido; por eso se cachean y se
-versionan las pequeñas. El valor del repo está en *cómo se reconstruyó y verificó* la geografía judicial.
+- **camelot** (tablas del PDF) · **geopandas / shapely / pyproj / pyogrio** · **topojson** ·
+  **pandas / numpy** · **openpyxl** · **matplotlib**.
+- **Plantilla base:** [ClearNote Py DA](https://github.com/ClearNote97/ClearNote_Py_DA) — mi plantilla de dev container para análisis de datos en Python.
 
 ---
 
 ## 🙏 Créditos
 
-- **Plantilla base:** [ClearNote Py DA](https://github.com/ClearNote97/ClearNote_Py_DA) — dev container para análisis de datos en Python.
 - **Autor:** MSc. Nicolás Enrique Valencia Santiago.
 - **Par de trabajo:** agente de IA (Claude / Claude Code, en el marco [Helix](https://github.com/ftuga/helix_asisten) de [ftuga](https://github.com/ftuga)).
-- **Datos:** Rama Judicial de Colombia y DANE (DIVIPOLA, MGN).
+- **Datos:** [Rama Judicial de Colombia](https://www.ramajudicial.gov.co/) y [DANE](https://geoportal.dane.gov.co/) (DIVIPOLA, MGN).
 
 ## ⚖️ Licencia
 
