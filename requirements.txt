@@ -1,0 +1,41 @@
+# Data manipulation and analysis
+pandas
+numpy
+
+# Excel file handling
+openpyxl
+xlsxwriter
+xlrd
+fastexcel
+pyarrow
+
+# Geospatial stack
+geopandas
+shapely
+pyproj
+fiona
+pyogrio
+topojson
+
+# PDF table extraction (judicial map)
+camelot-py
+opencv-python-headless
+pypdf
+
+# Visualization (mapas estáticos PNG/PDF)
+matplotlib
+
+# Jupyter and interactive computing (exploration only)
+ipython
+ipykernel
+ipynbname
+
+# Config / homologation tables
+pyyaml
+
+# Testing
+pytest
+
+# Utility libraries
+python-dateutil
+python-dotenv

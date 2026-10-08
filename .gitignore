@@ -1,0 +1,19 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+
+# sandbox/: la carpeta y su README viajan; el contenido (experimentos) no se versiona
+sandbox/*
+!sandbox/README.md
+
+# Caché de fuentes de red. El PDF y DIVIPOLA (pequeños) SÍ se versionan por
+# reproducibilidad (sus URLs pueden caer); la geometría MGN (~250 MB) NO.
+data/other/cache/mgn_municipios.geojson
+data/other/cache/*.gpkg
+
+# Memoria interna de Helix (no es entregable del proyecto)
+.claude/
+
+# Mapas HTML de ejemplo (regenerables, pesados). Se versiona el producto geojson/xlsx.
+output/*.html
